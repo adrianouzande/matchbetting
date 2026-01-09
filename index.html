@@ -6,182 +6,555 @@
     <title>AdrianBet - Calculadora Profesional Matched Betting</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilos para el login */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .login-logo i {
+            font-size: 2.5rem;
+            color: #e74c3c;
+        }
+        
+        .login-logo h1 {
+            font-size: 2rem;
+            color: #2c3e50;
+        }
+        
+        .login-form input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .login-form input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3);
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <i class="fas fa-calculator"></i>
+    <!-- OVERLAY DE LOGIN -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-container">
+            <div class="login-logo">
+                <i class="fas fa-lock"></i>
                 <h1>AdrianBet</h1>
             </div>
-            <p class="subtitle">Calculadora Profesional de Matched Betting</p>
-        </header>
-
-        <!-- Modo de Apuesta -->
-        <section class="section modo-section">
-            <h2><i class="fas fa-mobile-alt"></i> Selecciona el Modo</h2>
-            <div class="modo-grid">
-                <div class="modo-card" data-modo="1">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <h3>DINERO REAL</h3>
-                    <p>Apuesta con dinero real + cobertura</p>
-                </div>
-                <div class="modo-card" data-modo="2">
-                    <i class="fas fa-gift"></i>
-                    <h3>APUESTA GRATIS</h3>
-                    <p>Solo ganas las ganancias netas</p>
-                </div>
-                <div class="modo-card" data-modo="3">
-                    <i class="fas fa-hand-holding-usd"></i>
-                    <h3>REEMBOLSO</h3>
-                    <p>Apuesta real + bono si pierdes</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Configuración Básica -->
-        <section class="section config-section" id="config-section" style="display: none;">
-            <h2><i class="fas fa-cog"></i> Configuración Básica</h2>
-            <div class="config-grid">
-                <div class="input-group">
-                    <label for="back-stake" id="back-stake-label">
-                        <i class="fas fa-coins"></i> Stake Total
-                    </label>
-                    <input type="number" id="back-stake" step="0.01" min="0" placeholder="Ej: 20.00">
-                    <span class="currency">€</span>
-                </div>
-                <div class="input-group">
-                    <label for="comision">
-                        <i class="fas fa-percentage"></i> Comisión Betfair
-                    </label>
-                    <input type="number" id="comision" step="0.1" min="0" max="100" value="2" placeholder="Ej: 2">
-                    <span class="percentage">%</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Configuración de Reembolso -->
-        <section class="section bono-section" id="bono-section" style="display: none;">
-            <h2><i class="fas fa-gift"></i> Configuración del Reembolso</h2>
-            <div class="config-grid">
-                <div class="input-group">
-                    <label for="bono-nominal">
-                        <i class="fas fa-money-check-alt"></i> Valor NOMINAL del bono
-                    </label>
-                    <input type="number" id="bono-nominal" step="0.01" min="0" placeholder="Ej: 10.00">
-                    <span class="currency">€</span>
-                </div>
-                <div class="input-group">
-                    <label for="tasa-conversion">
-                        <i class="fas fa-chart-line"></i> Tasa conversión bono
-                    </label>
-                    <input type="number" id="tasa-conversion" step="0.1" min="0" max="100" placeholder="Ej: 80">
-                    <span class="percentage">%</span>
-                </div>
-            </div>
-            <div class="resultado-bono" id="resultado-bono" style="display: none;">
-                <p><i class="fas fa-check-circle"></i> Valor REAL estimado del bono: <span id="valor-bono-real">0.00</span>€</p>
-            </div>
-        </section>
-
-        <!-- Configuración de Partidos -->
-        <section class="section partidos-section" id="partidos-section" style="display: none;">
-            <h2><i class="fas fa-futbol"></i> Configuración de Partidos</h2>
             
-            <div class="input-group num-partidos-group">
-                <label for="num-partidos">
-                    <i class="fas fa-list-ol"></i> ¿Cuántos partidos tiene tu combinada?
-                </label>
-                <select id="num-partidos">
-                    <option value="1">1 Partido</option>
-                    <option value="2" selected>2 Partidos</option>
-                    <option value="3">3 Partidos</option>
-                    <option value="4">4 Partidos</option>
-                    <option value="5">5 Partidos</option>
-                </select>
-            </div>
-
-            <div class="partidos-container" id="partidos-container">
-                <!-- Los partidos se generarán dinámicamente aquí -->
-            </div>
-        </section>
-
-        <!-- Botón de Cálculo -->
-        <section class="section calcular-section" id="calcular-section" style="display: none;">
-            <button id="calcular-btn" class="btn-calcular">
-                <i class="fas fa-calculator"></i> CALCULAR ESTRATEGIA ÓPTIMA
-            </button>
-        </section>
-
-        <!-- Resultados -->
-        <section class="section resultados-section" id="resultados-section" style="display: none;">
-            <h2><i class="fas fa-chart-bar"></i> Resultados</h2>
-            
-            <div class="resumen" id="resumen">
-                <!-- Los resultados se mostrarán aquí -->
-            </div>
-
-            <!-- Tabla de Stakes -->
-            <div class="stakes-table" id="stakes-table" style="display: none;">
-                <h3><i class="fas fa-table"></i> Stakes Óptimos para Betfair</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Partido</th>
-                            <th>Cuota LAY</th>
-                            <th>Stake EN CONTRA</th>
-                            <th>Riesgo (Liability)</th>
-                            <th>Ganancia si aciertas</th>
-                        </tr>
-                    </thead>
-                    <tbody id="stakes-tbody">
-                        <!-- Las filas se generarán dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Recálculo para Segunda Apuesta -->
-            <div class="recalculo-section" id="recalculo-section" style="display: none;">
-                <h3><i class="fas fa-sync-alt"></i> Recálculo para Segunda Apuesta</h3>
-                <div class="recalculo-content">
-                    <p><i class="fas fa-exclamation-triangle"></i> <strong>Escenario:</strong> Apostaste en contra del Partido 1 y PERDIÓ (pagaste liability)</p>
-                    <p>Ahora necesitas apostar en contra del Partido 2 con cuotas que pueden haber cambiado</p>
-                    
-                    <div class="input-group">
-                        <label for="nueva-lay-2">
-                            <i class="fas fa-exchange-alt"></i> Nueva cuota LAY para Partido 2
-                        </label>
-                        <input type="number" id="nueva-lay-2" step="0.01" min="1.01" placeholder="Ej: 2.50">
-                    </div>
-                    
-                    <button id="recalcular-btn" class="btn-recalcular">
-                        <i class="fas fa-calculator"></i> SIMULAR RECÁLCULO
-                    </button>
-                    
-                    <div class="recalculo-resultado" id="recalculo-resultado" style="display: none;">
-                        <!-- Resultados del recálculo se mostrarán aquí -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Botón Nueva Apuesta -->
-        <section class="section nueva-apuesta-section" id="nueva-apuesta-section" style="display: none;">
-            <button id="nueva-apuesta-btn" class="btn-nueva">
-                <i class="fas fa-redo"></i> HACER NUEVA APUESTA
-            </button>
-        </section>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>© 2024 AdrianBet - Calculadora Profesional de Matched Betting</p>
-            <p class="disclaimer">
-                <i class="fas fa-exclamation-circle"></i> Esta herramienta es para fines educativos. Apuesta responsablemente.
+            <p style="color: #666; margin-bottom: 25px;">
+                <i class="fas fa-shield-alt"></i> Acceso restringido
             </p>
-        </footer>
+            
+            <form id="loginForm" class="login-form">
+                <input type="text" 
+                       id="username" 
+                       placeholder="Usuario" 
+                       required
+                       autocomplete="username">
+                
+                <input type="password" 
+                       id="password" 
+                       placeholder="Contraseña" 
+                       required
+                       autocomplete="current-password">
+                
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> INGRESAR
+                </button>
+                
+                <div id="errorMessage" class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> Usuario o contraseña incorrectos
+                </div>
+            </form>
+            
+            <div style="margin-top: 20px; font-size: 0.9em; color: #666;">
+                <i class="fas fa-info-circle"></i> Contacta al administrador para obtener acceso
+            </div>
+        </div>
+    </div>
+    
+    <!-- CONTENIDO PRINCIPAL (oculto inicialmente) -->
+    <div id="mainContent" class="hidden">
+        <!-- AQUÍ VA TODO TU CÓDIGO ANTERIOR -->
+        <div class="container">
+            <header class="header">
+                <div class="logo">
+                    <i class="fas fa-calculator"></i>
+                    <h1>AdrianBet</h1>
+                </div>
+                <p class="subtitle">Calculadora Profesional de Matched Betting</p>
+            </header>
+
+            <section class="section modo-section">
+                <h2><i class="fas fa-mobile-alt"></i> Selecciona el Modo</h2>
+                <div class="modo-grid">
+                    <div class="modo-card" data-modo="1">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <h3>DINERO REAL</h3>
+                        <p>Apuesta con dinero real + cobertura</p>
+                    </div>
+                    <div class="modo-card" data-modo="2">
+                        <i class="fas fa-gift"></i>
+                        <h3>APUESTA GRATIS</h3>
+                        <p>Solo ganas las ganancias netas</p>
+                    </div>
+                    <div class="modo-card" data-modo="3">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <h3>REEMBOLSO</h3>
+                        <p>Apuesta real + bono si pierdes</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section config-section" id="config-section" style="display: none;">
+                <h2><i class="fas fa-cog"></i> Configuración Básica</h2>
+                <div class="config-grid">
+                    <div class="input-group">
+                        <label for="back-stake" id="back-stake-label">
+                            <i class="fas fa-coins"></i> Stake Total
+                        </label>
+                        <input type="number" id="back-stake" step="0.01" min="0" placeholder="Ej: 20.00">
+                        <span class="currency">€</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="comision">
+                            <i class="fas fa-percentage"></i> Comisión Betfair
+                        </label>
+                        <input type="number" id="comision" step="0.1" min="0" max="100" value="2" placeholder="Ej: 2">
+                        <span class="percentage">%</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section bono-section" id="bono-section" style="display: none;">
+                <h2><i class="fas fa-gift"></i> Configuración del Reembolso</h2>
+                <div class="config-grid">
+                    <div class="input-group">
+                        <label for="bono-nominal">
+                            <i class="fas fa-money-check-alt"></i> Valor NOMINAL del bono
+                        </label>
+                        <input type="number" id="bono-nominal" step="0.01" min="0" placeholder="Ej: 10.00">
+                        <span class="currency">€</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="tasa-conversion">
+                            <i class="fas fa-chart-line"></i> Tasa conversión bono
+                        </label>
+                        <input type="number" id="tasa-conversion" step="0.1" min="0" max="100" placeholder="Ej: 80">
+                        <span class="percentage">%</span>
+                    </div>
+                </div>
+                <div class="resultado-bono" id="resultado-bono" style="display: none;">
+                    <p><i class="fas fa-check-circle"></i> Valor REAL estimado del bono: <span id="valor-bono-real">0.00</span>€</p>
+                </div>
+            </section>
+
+            <section class="section partidos-section" id="partidos-section" style="display: none;">
+                <h2><i class="fas fa-futbol"></i> Configuración de Partidos</h2>
+                
+                <div class="input-group num-partidos-group">
+                    <label for="num-partidos">
+                        <i class="fas fa-list-ol"></i> ¿Cuántos partidos tiene tu combinada?
+                    </label>
+                    <select id="num-partidos">
+                        <option value="1">1 Partido</option>
+                        <option value="2" selected>2 Partidos</option>
+                        <option value="3">3 Partidos</option>
+                        <option value="4">4 Partidos</option>
+                        <option value="5">5 Partidos</option>
+                    </select>
+                </div>
+
+                <div class="partidos-container" id="partidos-container">
+                    <!-- Los partidos se generarán dinámicamente aquí -->
+                </div>
+            </section>
+
+            <section class="section calcular-section" id="calcular-section" style="display: none;">
+                <button id="calcular-btn" class="btn-calcular">
+                    <i class="fas fa-calculator"></i> CALCULAR ESTRATEGIA ÓPTIMA
+                </button>
+            </section>
+
+            <section class="section resultados-section" id="resultados-section" style="display: none;">
+                <h2><i class="fas fa-chart-bar"></i> Resultados</h2>
+                
+                <div class="resumen" id="resumen">
+                    <!-- Los resultados se mostrarán aquí -->
+                </div>
+
+                <div class="stakes-table" id="stakes-table" style="display: none;">
+                    <h3><i class="fas fa-table"></i> Stakes Óptimos para Betfair</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Partido</th>
+                                <th>Cuota LAY</th>
+                                <th>Stake EN CONTRA</th>
+                                <th>Riesgo (Liability)</th>
+                                <th>Ganancia si aciertas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stakes-tbody">
+                            <!-- Las filas se generarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="recalculo-section" id="recalculo-section" style="display: none;">
+                    <h3><i class="fas fa-sync-alt"></i> Recálculo para Segunda Apuesta</h3>
+                    <div class="recalculo-content">
+                        <p><i class="fas fa-exclamation-triangle"></i> <strong>Escenario:</strong> Apostaste en contra del Partido 1 y PERDIÓ (pagaste liability)</p>
+                        <p>Ahora necesitas apostar en contra del Partido 2 con cuotas que pueden haber cambiado</p>
+                        
+                        <div class="input-group">
+                            <label for="nueva-lay-2">
+                                <i class="fas fa-exchange-alt"></i> Nueva cuota LAY para Partido 2
+                            </label>
+                            <input type="number" id="nueva-lay-2" step="0.01" min="1.01" placeholder="Ej: 2.50">
+                        </div>
+                        
+                        <button id="recalcular-btn" class="btn-recalcular">
+                            <i class="fas fa-calculator"></i> SIMULAR RECÁLCULO
+                        </button>
+                        
+                        <div class="recalculo-resultado" id="recalculo-resultado" style="display: none;">
+                            <!-- Resultados del recálculo se mostrarán aquí -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section nueva-apuesta-section" id="nueva-apuesta-section" style="display: none;">
+                <button id="nueva-apuesta-btn" class="btn-nueva">
+                    <i class="fas fa-redo"></i> HACER NUEVA APUESTA
+                </button>
+            </section>
+
+            <footer class="footer">
+                <p>© 2024 AdrianBet - Calculadora Profesional de Matched Betting</p>
+                <p class="disclaimer">
+                    <i class="fas fa-exclamation-circle"></i> Esta herramienta es para fines educativos. Apuesta responsablemente.
+                </p>
+            </footer>
+        </div>
     </div>
 
+    <script>
+        // ============================================
+        // CÓDIGO DE LOGIN Y SEGURIDAD
+        // ============================================
+        
+        // CONFIGURACIÓN DE USUARIOS (¡CAMBIA ESTOS DATOS!)
+        const USUARIOS_VALIDOS = [
+            {
+                usuario: "admin",
+                password: "admin123",
+                nombre: "Administrador"
+            },
+            {
+                usuario: "adrian",
+                password: "bet2024",
+                nombre: "Adrian"
+            }
+        ];
+        
+        // Tiempo de inactividad en minutos (60 = 1 hora)
+        const TIEMPO_INACTIVIDAD = 60;
+        
+        // Elementos del DOM
+        const loginOverlay = document.getElementById('loginOverlay');
+        const mainContent = document.getElementById('mainContent');
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // Variable para controlar inactividad
+        let timeoutInactividad;
+        
+        // Verificar si ya hay sesión activa
+        function verificarSesion() {
+            const sesionActiva = localStorage.getItem('adrianbet_sesion');
+            const ultimaActividad = localStorage.getItem('adrianbet_ultima_actividad');
+            
+            if (sesionActiva) {
+                // Verificar si la sesión ha expirado por inactividad
+                const ahora = new Date().getTime();
+                const tiempoTranscurrido = (ahora - ultimaActividad) / (1000 * 60); // en minutos
+                
+                if (tiempoTranscurrido < TIEMPO_INACTIVIDAD) {
+                    // Sesión válida, mostrar contenido
+                    loginOverlay.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                    reiniciarTemporizador();
+                    agregarBotonLogout(); // Agregar botón de cerrar sesión
+                    return true;
+                } else {
+                    // Sesión expirada
+                    cerrarSesion();
+                }
+            }
+            return false;
+        }
+        
+        // Manejar login
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Validar credenciales
+            const usuarioValido = USUARIOS_VALIDOS.find(
+                user => user.usuario === username && user.password === password
+            );
+            
+            if (usuarioValido) {
+                // Login exitoso
+                errorMessage.style.display = 'none';
+                
+                // Guardar sesión
+                localStorage.setItem('adrianbet_sesion', JSON.stringify({
+                    usuario: usuarioValido.usuario,
+                    nombre: usuarioValido.nombre,
+                    fechaLogin: new Date().toISOString()
+                }));
+                
+                localStorage.setItem('adrianbet_ultima_actividad', new Date().getTime());
+                
+                // Mostrar contenido
+                loginOverlay.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                
+                // Agregar botón de cerrar sesión
+                agregarBotonLogout();
+                
+                // Mostrar mensaje de bienvenida
+                mostrarMensajeBienvenida(usuarioValido.nombre);
+                
+                // Iniciar temporizador de inactividad
+                reiniciarTemporizador();
+                
+            } else {
+                // Login fallido
+                errorMessage.style.display = 'block';
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+                
+                // Agitar el formulario para efecto visual
+                loginForm.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    loginForm.style.animation = '';
+                }, 500);
+            }
+        });
+        
+        // Función para mostrar mensaje de bienvenida
+        function mostrarMensajeBienvenida(nombre) {
+            // Crear mensaje temporal
+            const mensaje = document.createElement('div');
+            mensaje.className = 'mensaje success';
+            mensaje.style.cssText = `
+                padding: 15px;
+                border-radius: 10px;
+                margin: 10px 0;
+                background: #d4edda;
+                color: #155724;
+                border-left: 5px solid #c3e6cb;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                animation: fadeIn 0.3s ease;
+            `;
+            mensaje.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>Bienvenido, ${nombre}! Sesión iniciada correctamente.</span>
+            `;
+            
+            // Insertar después del header
+            const container = document.querySelector('.container');
+            if (container) {
+                container.insertBefore(mensaje, container.firstChild);
+                
+                // Auto-eliminar después de 3 segundos
+                setTimeout(() => {
+                    mensaje.style.opacity = '0';
+                    mensaje.style.transition = 'opacity 0.3s ease';
+                    setTimeout(() => {
+                        if (mensaje.parentNode) mensaje.remove();
+                    }, 300);
+                }, 3000);
+            }
+        }
+        
+        // Agregar botón de cerrar sesión
+        function agregarBotonLogout() {
+            // Verificar si ya existe el botón
+            if (document.getElementById('logoutBtn')) return;
+            
+            const header = document.querySelector('.header');
+            if (header) {
+                const botonLogout = document.createElement('button');
+                botonLogout.id = 'logoutBtn';
+                botonLogout.innerHTML = '<i class="fas fa-sign-out-alt"></i> Cerrar Sesión';
+                botonLogout.style.cssText = `
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    background: #e74c3c;
+                    color: white;
+                    border: none;
+                    padding: 8px 15px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 0.9em;
+                    transition: all 0.3s ease;
+                `;
+                botonLogout.onmouseover = function() {
+                    this.style.background = '#c0392b';
+                    this.style.transform = 'scale(1.05)';
+                };
+                botonLogout.onmouseout = function() {
+                    this.style.background = '#e74c3c';
+                    this.style.transform = 'scale(1)';
+                };
+                botonLogout.onclick = cerrarSesion;
+                header.style.position = 'relative';
+                header.appendChild(botonLogout);
+            }
+        }
+        
+        // Control de inactividad
+        function reiniciarTemporizador() {
+            clearTimeout(timeoutInactividad);
+            
+            timeoutInactividad = setTimeout(() => {
+                alert('Tu sesión ha expirado por inactividad. Por favor, ingresa nuevamente.');
+                cerrarSesion();
+            }, TIEMPO_INACTIVIDAD * 60 * 1000);
+            
+            // Actualizar última actividad cuando el usuario interactúa
+            document.addEventListener('mousemove', actualizarActividad);
+            document.addEventListener('keypress', actualizarActividad);
+            document.addEventListener('click', actualizarActividad);
+        }
+        
+        function actualizarActividad() {
+            localStorage.setItem('adrianbet_ultima_actividad', new Date().getTime());
+            reiniciarTemporizador();
+        }
+        
+        // Cerrar sesión
+        function cerrarSesion() {
+            localStorage.removeItem('adrianbet_sesion');
+            localStorage.removeItem('adrianbet_ultima_actividad');
+            
+            loginOverlay.classList.remove('hidden');
+            mainContent.classList.add('hidden');
+            
+            // Limpiar formulario
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            errorMessage.style.display = 'none';
+            
+            // Remover event listeners
+            document.removeEventListener('mousemove', actualizarActividad);
+            document.removeEventListener('keypress', actualizarActividad);
+            document.removeEventListener('click', actualizarActividad);
+            
+            clearTimeout(timeoutInactividad);
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!verificarSesion()) {
+                // No hay sesión válida, mostrar login
+                loginOverlay.classList.remove('hidden');
+                mainContent.classList.add('hidden');
+            }
+            
+            // Agregar animación shake si no existe
+            if (!document.querySelector('#shake-animation')) {
+                const style = document.createElement('style');
+                style.id = 'shake-animation';
+                style.textContent = `
+                    @keyframes shake {
+                        0%, 100% { transform: translateX(0); }
+                        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                        20%, 40%, 60%, 80% { transform: translateX(5px); }
+                    }
+                    @keyframes fadeIn {
+                        from { opacity: 0; transform: translateY(20px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        });
+    </script>
+    
+    <!-- TU SCRIPT ORIGINAL DE LA CALCULADORA -->
     <script src="script.js"></script>
 </body>
 </html>
