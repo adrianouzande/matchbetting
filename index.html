@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdrianBet - Calculadora Profesional Matched Betting</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-calculator"></i>
+                <h1>AdrianBet</h1>
+            </div>
+            <p class="subtitle">Calculadora Profesional de Matched Betting</p>
+        </header>
+
+        <!-- Modo de Apuesta -->
+        <section class="section modo-section">
+            <h2><i class="fas fa-mobile-alt"></i> Selecciona el Modo</h2>
+            <div class="modo-grid">
+                <div class="modo-card" data-modo="1">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h3>DINERO REAL</h3>
+                    <p>Apuesta con dinero real + cobertura</p>
+                </div>
+                <div class="modo-card" data-modo="2">
+                    <i class="fas fa-gift"></i>
+                    <h3>APUESTA GRATIS</h3>
+                    <p>Solo ganas las ganancias netas</p>
+                </div>
+                <div class="modo-card" data-modo="3">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <h3>REEMBOLSO</h3>
+                    <p>Apuesta real + bono si pierdes</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configuración Básica -->
+        <section class="section config-section" id="config-section" style="display: none;">
+            <h2><i class="fas fa-cog"></i> Configuración Básica</h2>
+            <div class="config-grid">
+                <div class="input-group">
+                    <label for="back-stake" id="back-stake-label">
+                        <i class="fas fa-coins"></i> Stake Total
+                    </label>
+                    <input type="number" id="back-stake" step="0.01" min="0" placeholder="Ej: 20.00">
+                    <span class="currency">€</span>
+                </div>
+                <div class="input-group">
+                    <label for="comision">
+                        <i class="fas fa-percentage"></i> Comisión Betfair
+                    </label>
+                    <input type="number" id="comision" step="0.1" min="0" max="100" value="2" placeholder="Ej: 2">
+                    <span class="percentage">%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configuración de Reembolso -->
+        <section class="section bono-section" id="bono-section" style="display: none;">
+            <h2><i class="fas fa-gift"></i> Configuración del Reembolso</h2>
+            <div class="config-grid">
+                <div class="input-group">
+                    <label for="bono-nominal">
+                        <i class="fas fa-money-check-alt"></i> Valor NOMINAL del bono
+                    </label>
+                    <input type="number" id="bono-nominal" step="0.01" min="0" placeholder="Ej: 10.00">
+                    <span class="currency">€</span>
+                </div>
+                <div class="input-group">
+                    <label for="tasa-conversion">
+                        <i class="fas fa-chart-line"></i> Tasa conversión bono
+                    </label>
+                    <input type="number" id="tasa-conversion" step="0.1" min="0" max="100" placeholder="Ej: 80">
+                    <span class="percentage">%</span>
+                </div>
+            </div>
+            <div class="resultado-bono" id="resultado-bono" style="display: none;">
+                <p><i class="fas fa-check-circle"></i> Valor REAL estimado del bono: <span id="valor-bono-real">0.00</span>€</p>
+            </div>
+        </section>
+
+        <!-- Configuración de Partidos -->
+        <section class="section partidos-section" id="partidos-section" style="display: none;">
+            <h2><i class="fas fa-futbol"></i> Configuración de Partidos</h2>
+            
+            <div class="input-group num-partidos-group">
+                <label for="num-partidos">
+                    <i class="fas fa-list-ol"></i> ¿Cuántos partidos tiene tu combinada?
+                </label>
+                <select id="num-partidos">
+                    <option value="1">1 Partido</option>
+                    <option value="2" selected>2 Partidos</option>
+                    <option value="3">3 Partidos</option>
+                    <option value="4">4 Partidos</option>
+                    <option value="5">5 Partidos</option>
+                </select>
+            </div>
+
+            <div class="partidos-container" id="partidos-container">
+                <!-- Los partidos se generarán dinámicamente aquí -->
+            </div>
+        </section>
+
+        <!-- Botón de Cálculo -->
+        <section class="section calcular-section" id="calcular-section" style="display: none;">
+            <button id="calcular-btn" class="btn-calcular">
+                <i class="fas fa-calculator"></i> CALCULAR ESTRATEGIA ÓPTIMA
+            </button>
+        </section>
+
+        <!-- Resultados -->
+        <section class="section resultados-section" id="resultados-section" style="display: none;">
+            <h2><i class="fas fa-chart-bar"></i> Resultados</h2>
+            
+            <div class="resumen" id="resumen">
+                <!-- Los resultados se mostrarán aquí -->
+            </div>
+
+            <!-- Tabla de Stakes -->
+            <div class="stakes-table" id="stakes-table" style="display: none;">
+                <h3><i class="fas fa-table"></i> Stakes Óptimos para Betfair</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Partido</th>
+                            <th>Cuota LAY</th>
+                            <th>Stake EN CONTRA</th>
+                            <th>Riesgo (Liability)</th>
+                            <th>Ganancia si aciertas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stakes-tbody">
+                        <!-- Las filas se generarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Recálculo para Segunda Apuesta -->
+            <div class="recalculo-section" id="recalculo-section" style="display: none;">
+                <h3><i class="fas fa-sync-alt"></i> Recálculo para Segunda Apuesta</h3>
+                <div class="recalculo-content">
+                    <p><i class="fas fa-exclamation-triangle"></i> <strong>Escenario:</strong> Apostaste en contra del Partido 1 y PERDIÓ (pagaste liability)</p>
+                    <p>Ahora necesitas apostar en contra del Partido 2 con cuotas que pueden haber cambiado</p>
+                    
+                    <div class="input-group">
+                        <label for="nueva-lay-2">
+                            <i class="fas fa-exchange-alt"></i> Nueva cuota LAY para Partido 2
+                        </label>
+                        <input type="number" id="nueva-lay-2" step="0.01" min="1.01" placeholder="Ej: 2.50">
+                    </div>
+                    
+                    <button id="recalcular-btn" class="btn-recalcular">
+                        <i class="fas fa-calculator"></i> SIMULAR RECÁLCULO
+                    </button>
+                    
+                    <div class="recalculo-resultado" id="recalculo-resultado" style="display: none;">
+                        <!-- Resultados del recálculo se mostrarán aquí -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Botón Nueva Apuesta -->
+        <section class="section nueva-apuesta-section" id="nueva-apuesta-section" style="display: none;">
+            <button id="nueva-apuesta-btn" class="btn-nueva">
+                <i class="fas fa-redo"></i> HACER NUEVA APUESTA
+            </button>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2024 AdrianBet - Calculadora Profesional de Matched Betting</p>
+            <p class="disclaimer">
+                <i class="fas fa-exclamation-circle"></i> Esta herramienta es para fines educativos. Apuesta responsablemente.
+            </p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
